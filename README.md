@@ -1,22 +1,27 @@
-# 🩺 DiabetesCheck AI: Clinical Decision Support System
+# DiabetesCheck AI: Clinical Decision Support System
 
 <p align="center">
   <img src="images/logo.png" width="150" alt="DiabetesCheck AI Logo">
 </p>
 
 <p align="center">
+    <a href="https://diabetescheck-ai.streamlit.app/" target="_blank">
+        <img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit">
+    </a>
+</p>
+
+<p align="center">
     <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
-    <img src="https://img.shields.io/badge/Streamlit-1.28+-FF4B4B.svg" alt="Streamlit">
     <img src="https://img.shields.io/badge/XGBoost-Latest-00FF00.svg" alt="XGBoost">
-    <img src="https://img.shields.io/badge/Scikit--Learn-1.3+-F7931E.svg" alt="Scikit-Learn">
-    <img src="https://img.shields.io/badge/Status-Production--Ready-success.svg" alt="Status">
+    <img src="https://img.shields.io/badge/Status-Live-success.svg" alt="Status">
 </p>
 
 ---
 
 ## 🌟 Project Overview
 
-**DiabetesCheck AI** is a professional-grade Clinical Decision Support System (CDSS) designed to assist healthcare professionals in evaluating Type 2 Diabetes risk. 
+**DiabetesCheck AI** is a professional-grade Clinical Decision Support System (CDSS). 
+🔗 **Live Application:** [diabetescheck-ai.streamlit.app](https://diabetescheck-ai.streamlit.app/)
 
 Built using the **Pima Indians Diabetes Dataset**, the application leverages advanced Machine Learning to identify statistical patterns in patient metabolic and physiological markers.
 
