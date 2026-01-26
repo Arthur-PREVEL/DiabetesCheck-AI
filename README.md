@@ -18,7 +18,7 @@
 
 ---
 
-## 🌟 Project Overview
+## Project Overview
 
 **DiabetesCheck AI** is a professional-grade Clinical Decision Support System (CDSS). 
 🔗 **Live Application:** [diabetescheck-ai.streamlit.app](https://diabetescheck-ai.streamlit.app/)
@@ -30,11 +30,11 @@ Built using the **Pima Indians Diabetes Dataset**, the application leverages adv
 
 ---
 
-## 🧠 Technical Excellence
+## Technical Excellence
 
 This project focuses on two critical aspects of clinical data science: **Data Integrity** and **Model Sensitivity**.
 
-### 🛠️ Data Pipeline & Preprocessing
+### Data Pipeline & Preprocessing
 * **KNN Imputation:** Instead of simple mean/median filling, we used **K-Nearest Neighbors** to reconstruct missing clinical values (Glucose, Insulin, BMI), preserving multivariate relationships.
 * **Class Balancing (SMOTE):** To address the inherent imbalance in medical datasets, we applied **SMOTE** (Synthetic Minority Over-sampling Technique) to ensure the model learns to identify diabetic cases effectively.
 * **Feature Scaling:** Robust normalization using `StandardScaler` to ensure optimal convergence for gradient-boosted trees.
@@ -46,18 +46,18 @@ We opted for **XGBoost** for its ability to capture non-linear interactions betw
 
 ---
 
-## 🎨 User Experience (UX)
+## User Experience (UX)
 
 The interface is structured into two distinct clinical logical blocks:
 1.  **Metabolic Profile:** Focuses on internal biochemistry (Glucose, Insulin, BMI).
 2.  **Physiological Profile:** Focuses on physical measurements and genetic factors (Blood Pressure, Age, Pedigree).
 
-### 🔍 Explainable AI (XAI)
+### Explainable AI (XAI)
 The app doesn't just give a score; it provides a **Feature Contribution Chart**. This allows clinicians to see exactly which patient markers deviate the most from a "healthy median" baseline, making the AI's decision transparent.
 
 ---
 
-## 🚀 Installation & Local Run
+## Installation & Local Run
 
 1. **Clone the repository:**
    ```bash
@@ -72,7 +72,7 @@ The app doesn't just give a score; it provides a **Feature Contribution Chart**.
     ```bash
     streamlit run app.py
 
-## 📁 Project Structure
+## Project Structure
 
      ```
     ├── images/
@@ -87,9 +87,9 @@ The app doesn't just give a score; it provides a **Feature Contribution Chart**.
     └── README.md             # Project documentation
      ```
 
-## ⚖️ Disclaimer
+## Disclaimer
 This tool is for educational and research purposes only. It is not intended to replace professional medical advice, diagnosis, or treatment. **Always consult a healthcare professional for clinical decisions.**
 
-## 👤 Author
+## Author
 **Arthur PREVEL**
 Linkedin : https://www.linkedin.com/in/arthur-pr%C3%A9vel-265229332/
