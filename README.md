@@ -30,7 +30,7 @@ Built using the **Pima Indians Diabetes Dataset**, the application leverages adv
 
 ---
 
-## Technical Excellence
+## Technical Aspect
 
 This project focuses on two critical aspects of clinical data science: **Data Integrity** and **Model Sensitivity**.
 
