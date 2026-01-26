@@ -25,7 +25,7 @@
 
 Built using the **Pima Indians Diabetes Dataset**, the application leverages advanced Machine Learning to identify statistical patterns in patient metabolic and physiological markers.
 
-### 📺 Live Demo
+### Live Demo
 ![Application Demo](images/demo.gif)
 
 ---
@@ -39,7 +39,7 @@ This project focuses on two critical aspects of clinical data science: **Data In
 * **Class Balancing (SMOTE):** To address the inherent imbalance in medical datasets, we applied **SMOTE** (Synthetic Minority Over-sampling Technique) to ensure the model learns to identify diabetic cases effectively.
 * **Feature Scaling:** Robust normalization using `StandardScaler` to ensure optimal convergence for gradient-boosted trees.
 
-### 🔬 The Model: XGBoost
+### The Model: XGBoost
 We opted for **XGBoost** for its ability to capture non-linear interactions between physiological markers.
 * **Recall (Sensitivity): 70.0%** — Prioritizing the detection of positive cases to minimize false negatives in a screening context.
 * **Accuracy: 71.0%** — Maintaining a reliable global precision.
