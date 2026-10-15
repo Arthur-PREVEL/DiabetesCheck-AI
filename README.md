@@ -1,95 +1,78 @@
-# DiabetesCheck AI: Clinical Decision Support System
+# DiabetesCheck AI : dépistage du diabète expliqué (IA hybride)
 
-<p align="center">
-  <img src="images/logo.png" width="150" alt="DiabetesCheck AI Logo">
-</p>
+Mini-projet *IA Hybride*, ISIS Castres, 5e année DSIA, **sujet 1 : dépistage du diabète expliqué**.
+Question clinique : à partir de quelques mesures simples, estimer le risque de diabète d'une patiente et l'expliquer d'une façon
+qu'un médecin puisse vérifier. L'approche est **hybride** : un modèle d'apprentissage (régression logistique, XGBoost) combiné à des
+**règles médicales sourcées**, placées en entrée (variables expertes) et en sortie (règles qui encadrent la prédiction).
 
-<p align="center">
-    <a href="https://diabetescheck-ai.streamlit.app/" target="_blank">
-        <img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit">
-    </a>
-</p>
+## Contenu
 
-<p align="center">
-    <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
-    <img src="https://img.shields.io/badge/XGBoost-Latest-00FF00.svg" alt="XGBoost">
-    <img src="https://img.shields.io/badge/Status-Live-success.svg" alt="Status">
-</p>
+| Fichier | Rôle |
+|---|---|
+| `DiabetesCheck_Hybride_v2.ipynb` | Notebook complet (code, résultats et conclusions), à exécuter de haut en bas |
+| `diabetes.csv` | Jeu de données Pima Indians Diabetes (768 patientes, 8 variables + étiquette) |
+| `requirements.txt` | Dépendances Python |
+| `README.md` | Ce fichier |
 
----
+## Réexécuter le projet
 
-## Project Overview
+```bash
+python -m venv .venv && source .venv/bin/activate     # Windows : .venv\Scripts\activate
+pip install -r requirements.txt
+jupyter notebook DiabetesCheck_Hybride_v2.ipynb         # puis « Run All »
+```
 
-**DiabetesCheck AI** is a professional-grade Clinical Decision Support System (CDSS). 
-🔗 **Live Application:** [diabetescheck-ai.streamlit.app](https://diabetescheck-ai.streamlit.app/)
+- Le notebook lit `diabetes.csv` s'il est dans le même dossier ; sinon il télécharge le jeu depuis OpenML
+  (`fetch_openml("diabetes", version=1)`, connexion Internet nécessaire).
+- Toutes les graines aléatoires sont fixées (42). L'exécution complète prend quelques minutes (validation croisée répétée, sous-échantillons, bootstrap).
+- Aucun LLM n'est utilisé : les explications destinées à la patiente sont produites par **gabarit** (texte déterministe, vérifiable).
 
-Built using the **Pima Indians Diabetes Dataset**, the application leverages advanced Machine Learning to identify statistical patterns in patient metabolic and physiological markers.
+## Structure du notebook
 
-### Live Demo
-![Application Demo](images/demo.gif)
+| Sections | Contenu |
+|---|---|
+| 1-6 | Étape 1 : règle de qualité (0 = valeur manquante), comparaison des imputations (médiane, KNN, MICE), modèles de référence, **choix du seuil sur le train (hors-pli)**, SMOTE contre seuil à rappel égal, tranches d'âge |
+| 7-11 | Étape 2 : règles médicales et sources, règles en entrée, règles en sortie, ablation sur le test puis **ablation robuste** (validation croisée 5×5, intervalles de confiance) |
+| 12-14 | Cohérence, performance par tranche d'âge, cas hors distribution |
+| 15 | **Calibration** : ECE, courbes de fiabilité, recalibration par température |
+| 16 | **Cohérence** sur 768 patientes (R2, R6, monotonie) et XGBoost sous contrainte de monotonie |
+| 17 | Cas difficile : **peu de données** (50 à 614 patientes) |
+| 18 | **Explication patiente** : SHAP + règles déclenchées + texte par gabarit |
+| 19 | **Analyse d'erreurs** attribuée à chaque brique |
+| 20-21 | Coût de calcul, conclusion générale (grille de dimensions) |
 
----
+Le protocole commun de la fiche est couvert : référence non hybride, ablations, cas difficiles (peu de données, règle applicable, hors distribution),
+analyse d'erreurs par brique, et sept dimensions de la grille (performance, cohérence, fidélité, calibration, explicabilité, robustesse, coût).
 
-## Technical Aspect
+## Résultats principaux
 
-This project focuses on two critical aspects of clinical data science: **Data Integrity** and **Model Sensitivity**.
+- **Performance** : AUC ≈ 0,84 (régression logistique) et 0,83 (XGBoost) en validation croisée sur 768 patientes ; aucune version hybride n'est démontrablement meilleure.
+- **Seuil** : choisi sur le train (rappel cible 80 %), et non sur le test ; SMOTE n'apporte rien de plus qu'un seuil bas à rappel égal.
+- **Valeur des règles** : garde-fou hors distribution (XGBoost sous-estime une glycémie de 250 mg/dL, la règle R1 corrige), traçabilité de chaque décision, explication vérifiable.
+- **Cohérence** : XGBoost viole la monotonie (le risque baisse quand la glycémie monte pour 20 % des patientes) ; une contrainte de monotonie corrige l'essentiel et améliore l'AUC.
+- **Limite principale** : jeu restreint aux femmes Pima d'au moins 21 ans, résultats non généralisables.
 
-### Data Pipeline & Preprocessing
-* **KNN Imputation:** Instead of simple mean/median filling, we used **K-Nearest Neighbors** to reconstruct missing clinical values (Glucose, Insulin, BMI), preserving multivariate relationships.
-* **Class Balancing (SMOTE):** To address the inherent imbalance in medical datasets, we applied **SMOTE** (Synthetic Minority Over-sampling Technique) to ensure the model learns to identify diabetic cases effectively.
-* **Feature Scaling:** Robust normalization using `StandardScaler` to ensure optimal convergence for gradient-boosted trees.
+## Sources des règles médicales
 
-### The Model: XGBoost
-We opted for **XGBoost** for its ability to capture non-linear interactions between physiological markers.
-* **Recall (Sensitivity): 70.0%** — Prioritizing the detection of positive cases to minimize false negatives in a screening context.
-* **Accuracy: 71.0%** — Maintaining a reliable global precision.
+| Règle | Condition | Source |
+|---|---|---|
+| R1 | Glucose ≥ 200 mg/dL (2 h, HGPO 75 g) : diabète | American Diabetes Association, *Standards of Care in Diabetes*, section 2, Diagnosis and Classification (édition 2024 utilisée ; seuil inchangé dans l'édition 2026) |
+| R2 | 140 ≤ Glucose < 200 mg/dL : intolérance au glucose | ADA, *Standards of Care*, section 2 ; OMS/IDF 2006, *Definition and diagnosis of diabetes mellitus and intermediate hyperglycaemia* |
+| R3 | IMC ≥ 30 : obésité | OMS, fiche d'information *Obesity and overweight* |
+| R4 | IMC ≥ 25 et âge ≥ 35 ans : dépistage recommandé | USPSTF, *Screening for Prediabetes and Type 2 Diabetes*, JAMA 2021;326(8):736-743 (adultes de 35 à 70 ans en surpoids ou obèses) |
+| R5 | Pression diastolique ≥ 90 mmHg : hypertension | ESC/ESH 2018 ; facteur de risque listé par l'ADA |
+| R6 | Glucose < 140, IMC < 25, âge < 35 : aucun critère de dépistage | **Règle dérivée** de USPSTF 2021 et ADA ; plafond de risque 0,1 fixé empiriquement (1 diabétique sur 59 dans le train) |
 
----
+Définition de l'étiquette : critères de l'OMS (glycémie à 2 h ≥ 200 mg/dL), d'après la description du jeu (OpenML/UCI) ; Smith et al. (1988), *Using the ADAP
+learning algorithm to forecast the onset of diabetes mellitus*, Proc. Symp. Computer Applications in Medical Care, p. 261-265.
+Les sources sont à citer dans leur édition la plus récente ; le seuil de la règle R5 dépend de l'édition de recommandation retenue (130/80 ou 140/90).
 
-## User Experience (UX)
+## Usage d'assistants de code
 
-The interface is structured into two distinct clinical logical blocks:
-1.  **Metabolic Profile:** Focuses on internal biochemistry (Glucose, Insulin, BMI).
-2.  **Physiological Profile:** Focuses on physical measurements and genetic factors (Blood Pressure, Age, Pedigree).
+Des assistants de code (Claude, d'Anthropic) ont été utilisés pour relire et corriger le notebook (choix du seuil, ablation robuste), écrire les analyses complémentaires
+(calibration, cohérence, peu de données, SHAP, analyse d'erreurs), rédiger les conclusions d'après les résultats obtenus et vérifier les références des règles.
+Les choix de conception, la relecture et l'interprétation relèvent des auteurs. *(À adapter par le binôme si besoin.)*
 
-### Explainable AI (XAI)
-The app doesn't just give a score; it provides a **Feature Contribution Chart**. This allows clinicians to see exactly which patient markers deviate the most from a "healthy median" baseline, making the AI's decision transparent.
+## Avertissement
 
----
-
-## Installation & Local Run
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/Arthur-PREVEL/DiabetesCheck-AI.git](https://github.com/Arthur-PREVEL/DiabetesCheck-AI.git)
-   cd DiabetesCheck-AI
-
-2. **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-
-3. **Launch the application:**
-    ```bash
-    streamlit run app.py
-
-## Project Structure
-
-     ```
-    ├── images/
-    │   ├── logo.png          # Brand Identity
-    │   ├── favicon.ico       # Browser Icon
-    │   └── demo.gif          # Application walkthrough
-    ├── app.py                # Streamlit UI & Logic
-    ├── Diabetes_Predictor.ipynb # Research & Training Notebook
-    ├── model_diabetes.pkl    # Trained XGBoost Model
-    ├── scaler.pkl            # Pre-fitted Standard Scaler
-    ├── requirements.txt      # Production dependencies
-    └── README.md             # Project documentation
-     ```
-
-## Disclaimer
-This tool is for educational and research purposes only. It is not intended to replace professional medical advice, diagnosis, or treatment. **Always consult a healthcare professional for clinical decisions.**
-
-## Author
-**Arthur PREVEL**
-Linkedin : https://www.linkedin.com/in/arthur-pr%C3%A9vel-265229332/
+Cet outil est un exercice pédagogique d'aide au dépistage. **Ce n'est pas un dispositif médical et il ne fournit pas de diagnostic.**
