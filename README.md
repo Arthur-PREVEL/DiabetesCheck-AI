@@ -1,31 +1,49 @@
 # DiabetesCheck AI : dépistage du diabète expliqué (IA hybride)
 
-Mini-projet *IA Hybride*, ISIS Castres, 5e année DSIA, **sujet 1 : dépistage du diabète expliqué**.
+**Auteurs** : Arthur PREVEL et Wiame BOURJILA
+**Cadre** : mini-projet *IA Hybride*, ISIS Castres, 5e année DSIA (2026), **sujet 1 : dépistage du diabète expliqué**
+**Dépôt** : https://github.com/Arthur-PREVEL/DiabetesCheck-AI
+
 Question clinique : à partir de quelques mesures simples, estimer le risque de diabète d'une patiente et l'expliquer d'une façon
 qu'un médecin puisse vérifier. L'approche est **hybride** : un modèle d'apprentissage (régression logistique, XGBoost) combiné à des
 **règles médicales sourcées**, placées en entrée (variables expertes) et en sortie (règles qui encadrent la prédiction).
 
-## Contenu
+## Contenu du dépôt
 
 | Fichier | Rôle |
 |---|---|
-| `DiabetesCheck_Hybride_v2.ipynb` | Notebook complet (code, résultats et conclusions), à exécuter de haut en bas |
+| `DiabetesCheck_Hybride_v2.ipynb` | **Code principal** : notebook complet (code, résultats et conclusions), à exécuter de haut en bas |
 | `diabetes.csv` | Jeu de données Pima Indians Diabetes (768 patientes, 8 variables + étiquette) |
 | `requirements.txt` | Dépendances Python |
 | `README.md` | Ce fichier |
+| `Soutenance_DiabetesCheck.pptx` | Diaporama de la soutenance |
+| `archive/` | **Hors périmètre** : fichiers du premier projet (notebook initial, application Streamlit, brouillons), conservés pour mémoire |
+
+Pour évaluer le projet, il suffit de lire ce README, le `requirements.txt` et le notebook `DiabetesCheck_Hybride_v2.ipynb`.
+Tout le reste, y compris l'application Streamlit, relève de l'archive et n'a pas été mis à jour avec les résultats de la version 2.
 
 ## Réexécuter le projet
 
 ```bash
+git clone https://github.com/Arthur-PREVEL/DiabetesCheck-AI.git && cd DiabetesCheck-AI
 python -m venv .venv && source .venv/bin/activate     # Windows : .venv\Scripts\activate
 pip install -r requirements.txt
 jupyter notebook DiabetesCheck_Hybride_v2.ipynb         # puis « Run All »
 ```
 
 - Le notebook lit `diabetes.csv` s'il est dans le même dossier ; sinon il télécharge le jeu depuis OpenML
-  (`fetch_openml("diabetes", version=1)`, connexion Internet nécessaire).
-- Toutes les graines aléatoires sont fixées (42). L'exécution complète prend quelques minutes (validation croisée répétée, sous-échantillons, bootstrap).
-- Aucun LLM n'est utilisé : les explications destinées à la patiente sont produites par **gabarit** (texte déterministe, vérifiable).
+  (`fetch_openml("diabetes", version=1)`, connexion Internet nécessaire). Les résultats sont identiques avec les deux sources.
+- Toutes les graines aléatoires sont fixées (42). L'exécution complète prend de l'ordre de deux minutes dans notre environnement de test
+  (validation croisée répétée, sous-échantillons, bootstrap) ; ce temps dépend de la machine.
+- Environnement testé : Python 3.12 ; les versions minimales du `requirements.txt` n'ont pas toutes été vérifiées.
+- Aucun LLM n'est utilisé dans le projet : les explications destinées à la patiente sont produites par **gabarit** (texte déterministe, vérifiable).
+
+## Données
+
+Source : **Kaggle**, *Pima Indians Diabetes Database* (https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database), jeu issu du National Institute of Diabetes and
+Digestive and Kidney Diseases et diffusé par le dépôt UCI. 768 femmes d'origine Pima, d'au moins 21 ans ; 8 variables (grossesses, glycémie 2 h après charge en glucose,
+pression diastolique, pli cutané, insulinémie, IMC, score d'antécédents familiaux, âge) et une étiquette diabète oui/non. Dans plusieurs colonnes, un 0 est une valeur
+manquante (par exemple 49 % pour l'insulinémie), traitée comme telle.
 
 ## Structure du notebook
 
@@ -69,9 +87,8 @@ Les sources sont à citer dans leur édition la plus récente ; le seuil de la r
 
 ## Usage d'assistants de code
 
-Des assistants de code (Claude, d'Anthropic) ont été utilisés pour relire et corriger le notebook (choix du seuil, ablation robuste), écrire les analyses complémentaires
-(calibration, cohérence, peu de données, SHAP, analyse d'erreurs), rédiger les conclusions d'après les résultats obtenus et vérifier les références des règles.
-Les choix de conception, la relecture et l'interprétation relèvent des auteurs. *(À adapter par le binôme si besoin.)*
+Nous avons utilisé **Claude Code** (Anthropic) pour assister la réalisation du code (notebook) et la création des diapositives de la soutenance.
+Les choix de conception, la relecture, la vérification des résultats et leur interprétation relèvent des auteurs.
 
 ## Avertissement
 
